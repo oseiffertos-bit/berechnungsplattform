@@ -1,5 +1,4 @@
-import { createBrowserClient, createServerClient as createSSRServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createBrowserClient } from '@supabase/ssr'
 
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[]
 
@@ -30,23 +29,6 @@ export type Project = Database['public']['Tables']['projects']['Row']
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// Browser client — use in Client Components ('use client')
+// Browser client — nur in Client Components ('use client')
 export const createBrowserSupabaseClient = () =>
   createBrowserClient<Database>(supabaseUrl, supabaseAnonKey)
-
-// Server client — use in Server Components & Route Handlers
-export const createServerSupabaseClient = async () => {
-  const cookieStore = await cookies()
-  return createSSRServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() { return cookieStore.getAll() },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          )
-        } catch {}
-      },
-    },
-  })
-}
