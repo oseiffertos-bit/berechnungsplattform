@@ -8,9 +8,16 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { id } = await params
   const body = await req.json()
+
   const { data, error } = await supabase
     .from('projects')
-    .update({ ...body, updated_at: new Date().toISOString() })
+    .update({
+      name: body.name,
+      status: body.status,
+      form_data: body.form_data,
+      result_data: body.result_data,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
     .eq('user_id', user.id)
     .select()
